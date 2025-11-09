@@ -287,16 +287,6 @@ pip install -r requirements.txt
 - [ ] Multi-language support
 - [ ] Dietary restriction filters (vegan, gluten-free, etc.)
 
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
@@ -319,9 +309,3 @@ For issues, questions, or feature requests, please:
 ## Authors
 
 - **Harshal Ingle** - [GitHub](https://github.com/harshalingle123)
-
----
-
-**Built with Claude Code** - AI-assisted development
-
-Made with ❤️ for healthier eating choices
