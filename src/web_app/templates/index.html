@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CaloScan - AI Food Nutrition Analyzer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>🍽️ CaloScan</h1>
+            <p class="subtitle">AI-Powered Food Nutrition Analysis</p>
+        </header>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Upload Section -->
+            <div class="upload-section">
+                <div class="card">
+                    <h2>📸 Upload Food Image</h2>
+                    <form id="uploadForm" enctype="multipart/form-data">
+                        <!-- Image Upload -->
+                        <div class="upload-area" id="uploadArea">
+                            <input type="file" id="fileInput" name="file" accept="image/*" required>
+                            <div class="upload-prompt">
+                                <svg class="upload-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                </svg>
+                                <p>Click to upload or drag and drop</p>
+                                <p class="file-types">PNG, JPG, JPEG, GIF, WEBP (Max 16MB)</p>
+                            </div>
+                            <img id="imagePreview" class="image-preview" style="display: none;">
+                        </div>
+
+                        <!-- Model Selection -->
+                        <div class="form-section">
+                            <h3>🤖 Select AI Model</h3>
+                            <div class="model-selection">
+                                <label class="model-option">
+                                    <input type="radio" name="model" value="caloscan-v1" checked>
+                                    <div class="model-card">
+                                        <div class="model-name">CaloScan AI v1 (GPT-2)</div>
+                                        <div class="model-desc">Custom trained model (124M params) - Specialized for food nutrition analysis with text inputs</div>
+                                        <div class="model-status">✅ Active</div>
+                                    </div>
+                                </label>
+                                <label class="model-option">
+                                    <input type="radio" name="model" value="effnet-b3">
+                                    <div class="model-card">
+                                        <div class="model-name">Food Classifier (EfficientNet-B3)</div>
+                                        <div class="model-desc">Image classifier trained on Food-101 dataset - Detects 101 food types with USDA nutrition data</div>
+                                        <div class="model-status">✅ Active</div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Food Details (Optional) -->
+                        <div class="form-section">
+                            <h3>📝 Food Details <span class="optional">(Optional - helps improve accuracy)</span></h3>
+
+                            <div class="form-group">
+                                <label for="dish_name">Dish Name</label>
+                                <input type="text" id="dish_name" name="dish_name" placeholder="e.g., Grilled Chicken Salad">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="ingredients">Ingredients</label>
+                                <input type="text" id="ingredients" name="ingredients" placeholder='e.g., ["chicken", "lettuce", "tomato", "olive oil"]'>
+                                <small>Enter as a list in square brackets</small>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="cooking_method">Cooking Method</label>
+                                    <select id="cooking_method" name="cooking_method">
+                                        <option value="">Select method...</option>
+                                        <option value="Raw">Raw</option>
+                                        <option value="Grilled">Grilled</option>
+                                        <option value="Fried">Fried</option>
+                                        <option value="Baked">Baked</option>
+                                        <option value="Boiled">Boiled</option>
+                                        <option value="Steamed">Steamed</option>
+                                        <option value="Roasted">Roasted</option>
+                                        <option value="Stir-fried">Stir-fried</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="portion_size">Portion Size</label>
+                                    <input type="text" id="portion_size" name="portion_size" placeholder='e.g., ["chicken:200g", "salad:150g"]'>
+                                    <small>Enter as a list</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Analyze Button -->
+                        <button type="submit" class="btn-analyze" id="analyzeBtn">
+                            <span class="btn-text">🔍 Analyze Nutrition</span>
+                            <span class="btn-loading" style="display: none;">
+                                <span class="spinner"></span> Analyzing...
+                            </span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div class="results-section" id="resultsSection" style="display: none;">
+                <div class="card">
+                    <h2>📊 Nutrition Analysis Results</h2>
+
+                    <!-- Uploaded Image Display -->
+                    <div class="result-image-container">
+                        <img id="resultImage" src="" alt="Analyzed food">
+                    </div>
+
+                    <!-- Model Used -->
+                    <div class="model-used" id="modelUsed">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+
+                    <!-- Input Summary -->
+                    <div class="input-summary" id="inputSummary">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+
+                    <!-- Nutrition Cards -->
+                    <div class="nutrition-grid">
+                        <div class="nutrition-card">
+                            <div class="nutrition-icon">🔥</div>
+                            <div class="nutrition-value" id="calories">--</div>
+                            <div class="nutrition-label">Calories</div>
+                            <div class="nutrition-unit">kcal</div>
+                        </div>
+
+                        <div class="nutrition-card">
+                            <div class="nutrition-icon">🥩</div>
+                            <div class="nutrition-value" id="protein">--</div>
+                            <div class="nutrition-label">Protein</div>
+                            <div class="nutrition-unit">grams</div>
+                        </div>
+
+                        <div class="nutrition-card">
+                            <div class="nutrition-icon">🧈</div>
+                            <div class="nutrition-value" id="fat">--</div>
+                            <div class="nutrition-label">Fat</div>
+                            <div class="nutrition-unit">grams</div>
+                        </div>
+
+                        <div class="nutrition-card">
+                            <div class="nutrition-icon">🌾</div>
+                            <div class="nutrition-value" id="carbs">--</div>
+                            <div class="nutrition-label">Carbs</div>
+                            <div class="nutrition-unit">grams</div>
+                        </div>
+
+                        <div class="nutrition-card">
+                            <div class="nutrition-icon">🥬</div>
+                            <div class="nutrition-value" id="fiber">--</div>
+                            <div class="nutrition-label">Fiber</div>
+                            <div class="nutrition-unit">grams</div>
+                        </div>
+                    </div>
+
+                    <!-- Raw Prediction -->
+                    <div class="raw-prediction">
+                        <h3>🤖 Model Prediction</h3>
+                        <pre id="rawPrediction"></pre>
+                    </div>
+
+                    <!-- Analyze Another Button -->
+                    <button class="btn-secondary" onclick="resetForm()">
+                        📸 Analyze Another Image
+                    </button>
+                </div>
+            </div>
+
+            <!-- Error Display -->
+            <div class="error-message" id="errorMessage" style="display: none;">
+                <strong>❌ Error:</strong> <span id="errorText"></span>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Powered by CaloScan AI Model | © 2025</p>
+            <p class="disclaimer">⚠️ Note: This is an AI prediction. For accurate nutrition information, consult a nutritionist.</p>
+        </footer>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
